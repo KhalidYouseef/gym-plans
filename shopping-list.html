@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قائمة التسوق · أسبوع كامل</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --bg-elev: #131316;
+    --bg-card: #18181c;
+    --border: #26262d;
+    --border-strong: #3a3a44;
+    --text: #ededf0;
+    --text-dim: #9b9ba6;
+    --text-mute: #62626d;
+    --accent: #c5f25d;
+    --accent-dim: #6b8a2d;
+    --warn: #f5a623;
+    --danger: #ff5252;
+    --ok: #4ade80;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Tajawal', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 800px 400px at 80% -100px, rgba(197, 242, 93, 0.04), transparent),
+      radial-gradient(ellipse 600px 300px at 0% 50%, rgba(197, 242, 93, 0.02), transparent);
+  }
+
+  .num, .en {
+    font-family: 'JetBrains Mono', monospace;
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+
+  span.num, span.en { display: inline-block; }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 40px 0 28px;
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+
+  h1 .accent { color: var(--accent); }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 16px;
+  }
+
+  /* ===== STATS BAR (sticky) ===== */
+  .stats-bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(10, 10, 11, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
+    margin-bottom: 28px;
+    transition: border-color 0.2s;
+  }
+
+  .stats-bar.has-progress {
+    border-bottom-color: var(--accent-dim);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .stat {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    border-radius: 6px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+    color: var(--text-mute);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1;
+  }
+
+  .stat-value.accent { color: var(--accent); }
+  .stat-value.warn { color: var(--warn); }
+  .stat-value.ok { color: var(--ok); }
+  .stat-value.danger { color: var(--danger); }
+
+  .stat-unit {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-right: 4px;
+    font-weight: 400;
+  }
+
+  /* progress bar inside header */
+  .progress-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 12px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #88c542);
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ===== TOOLBAR ===== */
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    background: var(--bg-elev);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn:hover {
+    background: var(--bg-card);
+    border-color: var(--accent-dim);
+  }
+
+  .btn.btn-danger:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  .btn-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+  }
+
+  /* ===== CATEGORIES ===== */
+  .category {
+    margin-bottom: 28px;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+  }
+
+  .category-title {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .category-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .category-name {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+  }
+
+  .category-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    padding: 3px 9px;
+    border-radius: 999px;
+  }
+
+  /* ===== ITEMS ===== */
+  .item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 14px;
+    align-items: center;
+    transition: all 0.2s;
+  }
+
+  .item:hover {
+    border-color: var(--border-strong);
+    background: var(--bg-elev);
+  }
+
+  .item.checked {
+    opacity: 0.55;
+    border-color: var(--accent-dim);
+    background: rgba(197, 242, 93, 0.04);
+  }
+
+  .item.checked .item-name {
+    text-decoration: line-through;
+    text-decoration-color: var(--accent-dim);
+    text-decoration-thickness: 2px;
+  }
+
+  /* checkbox */
+  .check-wrap {
+    position: relative;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  .check-wrap input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  .check-box {
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--border-strong);
+    border-radius: 5px;
+    background: var(--bg);
+    transition: all 0.18s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .check-wrap input:checked ~ .check-box {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .check-box::after {
+    content: "";
+    width: 10px;
+    height: 6px;
+    border-left: 2px solid var(--bg);
+    border-bottom: 2px solid var(--bg);
+    transform: rotate(-45deg) translate(1px, -1px) scale(0);
+    transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .check-wrap input:checked ~ .check-box::after {
+    transform: rotate(-45deg) translate(1px, -1px) scale(1);
+  }
+
+  .check-wrap:hover .check-box {
+    border-color: var(--accent);
+  }
+
+  /* item content */
+  .item-content {
+    min-width: 0;
+  }
+
+  .item-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .item-qty {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    direction: ltr;
+    unicode-bidi: isolate;
+    display: inline-block;
+  }
+
+  .item-note {
+    font-size: 12px;
+    color: var(--text-mute);
+    margin-right: 8px;
+  }
+
+  /* prices */
+  .item-prices {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .price-est {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    text-align: left;
+    min-width: 60px;
+  }
+
+  .price-est-label {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .price-input-wrap {
+    position: relative;
+  }
+
+  .price-input {
+    width: 78px;
+    padding: 7px 10px;
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    border-radius: 5px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.18s;
+    direction: ltr;
+  }
+
+  .price-input::placeholder {
+    color: var(--text-mute);
+    font-weight: 400;
+  }
+
+  .price-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--bg-elev);
+  }
+
+  .price-input.has-value {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+  }
+
+  /* totals card */
+  .totals {
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    padding: 22px;
+    margin-top: 32px;
+    margin-bottom: 28px;
+    background-image: linear-gradient(135deg, rgba(197, 242, 93, 0.04), transparent 60%);
+  }
+
+  .totals-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .totals-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .total-cell {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+
+  .total-label {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.15em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .total-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .total-unit {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-right: 4px;
+    font-weight: 400;
+  }
+
+  .diff-pill {
+    display: inline-block;
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 999px;
+  }
+  .diff-pill.under { background: rgba(74, 222, 128, 0.12); color: var(--ok); border: 1px solid rgba(74, 222, 128, 0.3); }
+  .diff-pill.over { background: rgba(255, 82, 82, 0.12); color: var(--danger); border: 1px solid rgba(255, 82, 82, 0.3); }
+  .diff-pill.even { background: var(--bg-card); color: var(--text-dim); border: 1px solid var(--border); }
+
+  /* day plan */
+  .day-plan {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px;
+    margin-bottom: 28px;
+  }
+
+  .day-plan-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .day-plan-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .day-plan-table th, .day-plan-table td {
+    padding: 9px 12px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .day-plan-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .day-plan-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .day-plan-table .day-name {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* notes */
+  .notes {
+    background: var(--bg-card);
+    border-right: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 18px 20px;
+    margin-bottom: 28px;
+  }
+
+  .notes-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .notes ul {
+    list-style: none;
+    padding-right: 0;
+  }
+
+  .notes li {
+    padding: 5px 0 5px 0;
+    color: var(--text-dim);
+    font-size: 14px;
+    position: relative;
+    padding-right: 18px;
+  }
+
+  .notes li::before {
+    content: "→";
+    color: var(--accent);
+    position: absolute;
+    right: 0;
+    top: 5px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 0 40px;
+    margin-top: 40px;
+    color: var(--text-mute);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+
+  /* modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 11, 0.78);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-backdrop.open {
+    display: flex;
+  }
+
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    padding: 26px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .modal-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+
+  .modal h3 {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .modal p {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 22px;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .modal .btn-confirm {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: var(--bg);
+  }
+
+  .modal .btn-confirm:hover {
+    background: #ff7070;
+    border-color: #ff7070;
+    color: var(--bg);
+  }
+
+  /* toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--bg-card);
+    border: 1px solid var(--accent-dim);
+    color: var(--text);
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 200;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* responsive */
+  @media (max-width: 640px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .stat-value { font-size: 16px; }
+    .totals-grid { grid-template-columns: 1fr; }
+
+    .item {
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+    }
+    .item-prices {
+      grid-column: 1 / -1;
+      justify-content: space-between;
+      padding-top: 10px;
+      margin-top: 4px;
+      border-top: 1px dashed var(--border);
+    }
+
+    h1 { font-size: 28px; }
+    .category-name { font-size: 18px; }
+  }
+
+  /* print */
+  @media print {
+    body { background: white; color: black; }
+    .toolbar, .price-input-wrap, .stats-bar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="eyebrow">// SHOPPING LIST · WEEKLY · MEAL PREP</div>
+    <h1>قائمة <span class="accent">التسوق</span></h1>
+    <p class="subtitle">أسبوع كامل · لشخصين · 3 دجاج + 2 سمك + 2 لحمة</p>
+  </header>
+
+  <div class="stats-bar" id="statsBar">
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-label">المشترى</div>
+        <div class="stat-value accent"><span class="num" id="boughtCount">0</span><span class="stat-unit">/ <span class="num" id="totalCount">0</span></span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">المتبقي</div>
+        <div class="stat-value"><span class="num" id="remainingCount">0</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">المدفوع</div>
+        <div class="stat-value accent"><span class="num" id="actualSpent">0</span><span class="stat-unit">ر</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">المتوقع</div>
+        <div class="stat-value"><span class="num" id="estimatedTotal">0</span><span class="stat-unit">ر</span></div>
+      </div>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn btn-danger" id="resetBtn">
+      <span class="btn-icon">↻</span>
+      إعادة الأسبوع
+    </button>
+    <button class="btn" id="uncheckAllBtn">
+      <span class="btn-icon">☐</span>
+      إلغاء كل التشيكات
+    </button>
+    <button class="btn" onclick="window.print()">
+      <span class="btn-icon">⎙</span>
+      طباعة
+    </button>
+  </div>
+
+  <!-- ============ ITEMS (will be injected) ============ -->
+  <div id="categoriesContainer"></div>
+
+  <!-- ============ TOTALS ============ -->
+  <div class="totals">
+    <div class="totals-title">// الإجمالي</div>
+    <div class="totals-grid">
+      <div class="total-cell">
+        <div class="total-label">المتوقع</div>
+        <div class="total-value"><span class="num" id="totalEstimated">0</span><span class="total-unit">ريال</span></div>
+      </div>
+      <div class="total-cell">
+        <div class="total-label">الفعلي (المشترى)</div>
+        <div class="total-value accent"><span class="num" id="totalActual">0</span><span class="total-unit">ريال</span></div>
+        <div class="diff-pill even" id="diffPill">—</div>
+      </div>
+      <div class="total-cell">
+        <div class="total-label">للشخص الواحد</div>
+        <div class="total-value"><span class="num" id="perPerson">0</span><span class="total-unit">ريال</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DAY PLAN ============ -->
+  <div class="day-plan">
+    <div class="day-plan-title">// خطة الأيام (للغداء)</div>
+    <table class="day-plan-table">
+      <thead>
+        <tr><th>اليوم</th><th>البروتين</th><th>الكارب</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="day-name">السبت</td><td>دجاج مشوي</td><td>أرز</td></tr>
+        <tr><td class="day-name">الأحد</td><td>سمك أبيض</td><td>بطاطا حلوة</td></tr>
+        <tr><td class="day-name">الإثنين</td><td>كفتة بقري</td><td>أرز</td></tr>
+        <tr><td class="day-name">الثلاثاء</td><td>دجاج (تتبيلة مختلفة)</td><td>بطاطا حلوة</td></tr>
+        <tr><td class="day-name">الأربعاء</td><td>سمك أبيض</td><td>أرز</td></tr>
+        <tr><td class="day-name">الخميس</td><td>استيك</td><td>بطاطا حلوة</td></tr>
+        <tr><td class="day-name">الجمعة</td><td>دجاج</td><td>أرز</td></tr>
+      </tbody>
+    </table>
+    <p style="color:var(--text-mute); font-size:12px; margin-top:12px;">
+      العشا: سمك أبيض (من نفس الكمية) + بطاطا/خضار.
+    </p>
+  </div>
+
+  <!-- ============ NOTES ============ -->
+  <div class="notes">
+    <div class="notes-title">// ملاحظات meal prep</div>
+    <ul>
+      <li>اطبخ كل البروتين السبت — قسّم على 14 علبة (7 غدا + 7 عشا) لكل واحد.</li>
+      <li>الأرز والبطاطس: اطبخ نص الأسبوع، وحضّر التاني يوم الأربعاء.</li>
+      <li>الكفتة: اعجنها بالبقدونس والبصل، شكّلها أصابع، خزّنها نيّئة في الفريزر.</li>
+      <li>الاستيك: ما يتفريزش بعد الطبخ — يتطبخ طازج يوم الخميس.</li>
+      <li>الخضار الورقية: اشتريها يوم الإثنين/الثلاثاء عشان آخر الأسبوع.</li>
+    </ul>
+  </div>
+
+  <footer>
+    Shopping List v1 · Khalid + Barakat · Riyadh · auto-saved locally
+  </footer>
+
+</div>
+
+<!-- modal -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <div class="modal-icon">⚠</div>
+    <h3>إعادة الأسبوع؟</h3>
+    <p>هيتم مسح كل التشيكات والأسعار اللي سجلتها. مش هتقدر ترجعها.</p>
+    <div class="modal-actions">
+      <button class="btn" id="modalCancel">إلغاء</button>
+      <button class="btn btn-confirm" id="modalConfirm">نعم، ابدأ أسبوع جديد</button>
+    </div>
+  </div>
+</div>
+
+<!-- toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  // ============ DATA ============
+  const STORAGE_KEY = 'shopping-list-v1';
+
+  const CATEGORIES = [
+    {
+      id: 'protein',
+      name: 'البروتين',
+      icon: '🥩',
+      items: [
+        { id: 'eggs', name: 'بيض', qty: 'كرتونة 30 حبة', est: 15 },
+        { id: 'cottage', name: 'جبنة قريش', qty: '1.5 kg', est: 35 },
+        { id: 'chicken', name: 'صدور دجاج طازج (نيّء)', qty: '1.5 kg', est: 60, note: '3 وجبات' },
+        { id: 'fish', name: 'سمك أبيض (هامور/شعري/ناجل) نيّء', qty: '4 kg', est: 115, note: '2 غدا + 7 عشا' },
+        { id: 'mince', name: 'لحمة مفرومة قليلة الدهن', qty: '0.5 kg', est: 25, note: 'للكفتة' },
+        { id: 'steak', name: 'استيك بقري (ريب آي / سيرلوين)', qty: '0.5 kg', est: 40 },
+        { id: 'yogurt', name: 'زبادي يوناني 0%', qty: '3 kg (4 علب)', est: 65 },
+      ]
+    },
+    {
+      id: 'carbs',
+      name: 'كاربوهيدرات',
+      icon: '🌾',
+      items: [
+        { id: 'oats', name: 'شوفان', qty: '1 kg', est: 18 },
+        { id: 'rice', name: 'أرز بسمتي (نيّء)', qty: '1 kg', est: 13 },
+        { id: 'sweet-potato', name: 'بطاطا حلوة', qty: '4 kg', est: 28 },
+        { id: 'bread', name: 'رغيف توست أسمر', qty: '1 رغيف', est: 13 },
+        { id: 'dates', name: 'تمر', qty: '1 kg', est: 30 },
+        { id: 'banana', name: 'موز', qty: '14 ثمرة (~2 kg)', est: 14 },
+      ]
+    },
+    {
+      id: 'fats',
+      name: 'دهون',
+      icon: '🥑',
+      items: [
+        { id: 'olive-oil', name: 'زيت زيتون بكر 500ml', qty: 'بطلة 1', est: 40, note: 'تكفي شهر' },
+        { id: 'almonds', name: 'لوز نيء', qty: '250 g', est: 28 },
+        { id: 'avocado', name: 'أفوكادو', qty: '2 ثمرة', est: 14 },
+      ]
+    },
+    {
+      id: 'veggies',
+      name: 'الخضار',
+      icon: '🥬',
+      items: [
+        { id: 'lettuce', name: 'خس + جرجير + سلطة ورقية', qty: '1.5 kg', est: 18 },
+        { id: 'cucumber', name: 'خيار', qty: '1 kg', est: 7 },
+        { id: 'tomato', name: 'طماطم', qty: '1.5 kg', est: 12 },
+        { id: 'broccoli', name: 'بروكلي', qty: '1 kg', est: 14 },
+        { id: 'mixed-veg', name: 'كوسة + باذنجان + فلفل', qty: '2 kg', est: 22 },
+        { id: 'aromatics', name: 'بصل + ثوم + ليمون', qty: 'تقريبي', est: 12 },
+        { id: 'herbs', name: 'بقدونس + كزبرة', qty: 'حزمتين', est: 5, note: 'للكفتة' },
+      ]
+    }
+  ];
+
+  const PEOPLE = 2;
+
+  // ============ STATE ============
+  let state = loadState();
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {
+      console.warn('Could not read localStorage:', e);
+    }
+    return {};
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.warn('Could not save to localStorage:', e);
+    }
+  }
+
+  // ============ RENDER ============
+  function render() {
+    const container = document.getElementById('categoriesContainer');
+    container.innerHTML = '';
+
+    CATEGORIES.forEach(cat => {
+      const section = document.createElement('div');
+      section.className = 'category';
+
+      const checkedCount = cat.items.filter(it => state[it.id]?.checked).length;
+
+      section.innerHTML = `
+        <div class="category-header">
+          <div class="category-title">
+            <span class="category-icon">${cat.icon}</span>
+            <span class="category-name">${cat.name}</span>
+          </div>
+          <span class="category-count"><span class="num">${checkedCount}/${cat.items.length}</span></span>
+        </div>
+        <div class="category-items"></div>
+      `;
+
+      const list = section.querySelector('.category-items');
+      cat.items.forEach(item => {
+        list.appendChild(renderItem(item));
+      });
+
+      container.appendChild(section);
+    });
+
+    updateStats();
+  }
+
+  function renderItem(item) {
+    const itemState = state[item.id] || {};
+    const checked = !!itemState.checked;
+    const actualPrice = itemState.actualPrice ?? '';
+
+    const el = document.createElement('div');
+    el.className = 'item' + (checked ? ' checked' : '');
+    el.innerHTML = `
+      <label class="check-wrap">
+        <input type="checkbox" data-id="${item.id}" ${checked ? 'checked' : ''}>
+        <span class="check-box"></span>
+      </label>
+      <div class="item-content">
+        <div class="item-name">${item.name}${item.note ? `<span class="item-note">· ${item.note}</span>` : ''}</div>
+        <span class="item-qty">${item.qty}</span>
+      </div>
+      <div class="item-prices">
+        <div class="price-est">
+          <span class="price-est-label">متوقع</span>
+          <span class="num">~${item.est} ر</span>
+        </div>
+        <div class="price-input-wrap">
+          <input type="number" inputmode="decimal" step="0.01" min="0"
+                 class="price-input ${actualPrice !== '' ? 'has-value' : ''}"
+                 placeholder="السعر"
+                 data-id="${item.id}"
+                 value="${actualPrice}">
+        </div>
+      </div>
+    `;
+    return el;
+  }
+
+  // ============ EVENTS ============
+  document.getElementById('categoriesContainer').addEventListener('change', e => {
+    const target = e.target;
+    if (target.matches('input[type="checkbox"]')) {
+      const id = target.dataset.id;
+      if (!state[id]) state[id] = {};
+      state[id].checked = target.checked;
+      saveState();
+      // toggle visual class without full re-render
+      const itemEl = target.closest('.item');
+      itemEl.classList.toggle('checked', target.checked);
+      updateCategoryCount(id);
+      updateStats();
+    } else if (target.matches('input.price-input')) {
+      const id = target.dataset.id;
+      if (!state[id]) state[id] = {};
+      const v = target.value;
+      if (v === '') {
+        delete state[id].actualPrice;
+        target.classList.remove('has-value');
+      } else {
+        const num = parseFloat(v);
+        if (!isNaN(num) && num >= 0) {
+          state[id].actualPrice = num;
+          target.classList.add('has-value');
+        }
+      }
+      saveState();
+      updateStats();
+    }
+  });
+
+  function updateCategoryCount(itemId) {
+    const cat = CATEGORIES.find(c => c.items.some(i => i.id === itemId));
+    if (!cat) return;
+    const checkedCount = cat.items.filter(it => state[it.id]?.checked).length;
+    const sections = document.querySelectorAll('.category');
+    const idx = CATEGORIES.indexOf(cat);
+    const countEl = sections[idx]?.querySelector('.category-count .num');
+    if (countEl) countEl.textContent = `${checkedCount}/${cat.items.length}`;
+  }
+
+  function updateStats() {
+    const allItems = CATEGORIES.flatMap(c => c.items);
+    const total = allItems.length;
+    const bought = allItems.filter(it => state[it.id]?.checked).length;
+    const remaining = total - bought;
+
+    let estimatedTotal = 0;
+    let actualSpent = 0;
+
+    allItems.forEach(it => {
+      estimatedTotal += it.est;
+      const s = state[it.id];
+      if (s?.checked) {
+        // if actual price logged, use it; otherwise use estimate as fallback
+        actualSpent += (s.actualPrice !== undefined) ? s.actualPrice : it.est;
+      }
+    });
+
+    document.getElementById('boughtCount').textContent = bought;
+    document.getElementById('totalCount').textContent = total;
+    document.getElementById('remainingCount').textContent = remaining;
+    document.getElementById('actualSpent').textContent = formatNum(actualSpent);
+    document.getElementById('estimatedTotal').textContent = formatNum(estimatedTotal);
+
+    // progress bar
+    const pct = total > 0 ? (bought / total) * 100 : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('statsBar').classList.toggle('has-progress', pct > 0);
+
+    // totals card
+    document.getElementById('totalEstimated').textContent = formatNum(estimatedTotal);
+
+    // total actual = sum of all actualPrice values logged (regardless of checked)
+    let totalActual = 0;
+    let hasActual = false;
+    allItems.forEach(it => {
+      const s = state[it.id];
+      if (s?.actualPrice !== undefined) {
+        totalActual += s.actualPrice;
+        hasActual = true;
+      }
+    });
+    document.getElementById('totalActual').textContent = formatNum(totalActual);
+    document.getElementById('perPerson').textContent = formatNum(totalActual / PEOPLE);
+
+    // diff pill
+    const pill = document.getElementById('diffPill');
+    if (!hasActual) {
+      pill.textContent = '—';
+      pill.className = 'diff-pill even';
+    } else {
+      const diff = totalActual - estimatedTotal;
+      if (Math.abs(diff) < 1) {
+        pill.textContent = 'مطابق للمتوقع';
+        pill.className = 'diff-pill even';
+      } else if (diff < 0) {
+        pill.textContent = `أقل بـ ${formatNum(Math.abs(diff))} ر`;
+        pill.className = 'diff-pill under';
+      } else {
+        pill.textContent = `أعلى بـ ${formatNum(diff)} ر`;
+        pill.className = 'diff-pill over';
+      }
+    }
+  }
+
+  function formatNum(n) {
+    if (n === 0) return '0';
+    // round to 0 decimals if integer-ish, else 2
+    return Number.isInteger(n) ? String(n) : n.toFixed(2).replace(/\.?0+$/, '');
+  }
+
+  // ============ TOOLBAR ============
+  const modal = document.getElementById('modal');
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    modal.classList.add('open');
+  });
+  document.getElementById('modalCancel').addEventListener('click', () => {
+    modal.classList.remove('open');
+  });
+  modal.addEventListener('click', e => {
+    if (e.target === modal) modal.classList.remove('open');
+  });
+  document.getElementById('modalConfirm').addEventListener('click', () => {
+    state = {};
+    saveState();
+    render();
+    modal.classList.remove('open');
+    showToast('تم بدء أسبوع جديد ✓');
+  });
+
+  document.getElementById('uncheckAllBtn').addEventListener('click', () => {
+    Object.keys(state).forEach(id => {
+      if (state[id]) state[id].checked = false;
+    });
+    saveState();
+    render();
+    showToast('تم إلغاء كل التشيكات');
+  });
+
+  // ============ TOAST ============
+  let toastTimer;
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  // ============ INIT ============
+  render();
+})();
+</script>
+
+</body>
+</html>
